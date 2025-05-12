@@ -1,0 +1,126 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Recruitment {
+  id         Int      @id @default(autoincrement())
+  title      String
+  templateId Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  template   Template @relation(fields: [templateId], references: [id],onDelete: Cascade)
+  resumes    Resume[]
+}
+
+model Template {
+  id           Int             @id @default(autoincrement())
+  name         String
+  description  String?
+  createdAt    DateTime        @default(now())
+  updatedAt  DateTime @updatedAt
+  recruitments Recruitment[]
+  fieldGroups  FieldGroup[]
+}
+
+model FieldGroup {
+  id          Int      @id @default(autoincrement())
+  templateId  Int
+  template    Template @relation(fields: [templateId], references: [id],onDelete: Cascade)
+  name        String
+  description String?
+  createdAt    DateTime        @default(now())
+  updatedAt  DateTime @updatedAt
+  fields      FieldGroupField[]
+}
+
+model Field {
+  id          Int             @id @default(autoincrement())
+  name        String
+  type        FieldType?
+  content     Json?
+  description String?
+  createdAt    DateTime        @default(now())
+  updatedAt  DateTime @updatedAt
+  fieldGroupFields  FieldGroupField[]
+  resumeItems ResumeItem[]
+}
+
+model FieldGroupField {
+  id          Int      @id @default(autoincrement())
+  fieldGroup  FieldGroup @relation(fields: [fieldGroupId], references: [id],onDelete: Cascade)
+  fieldGroupId Int
+  field       Field    @relation(fields: [fieldId], references: [id],onDelete: Cascade)
+  fieldId     Int
+  order    Int
+  isRequired  Boolean  @default(false)
+  createdAt    DateTime        @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([fieldGroupId, fieldId])
+  @@index([fieldGroupId, fieldId])
+}
+
+
+enum FieldType {
+  TEXT
+  NUMBER
+  DATE
+  BOOLEAN
+  SELECT
+  MULTI_SELECT
+  RADIO
+  CHECKBOX
+  DROPDOWN
+  FILE
+  IMAGE
+  VIDEO
+  LINK
+  EMAIL
+  PHONE
+  URL
+}
+
+model Resume {
+  id            Int             @id @default(autoincrement())
+  name          String
+  title         String
+  summary       String
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  status        ResumeStatus    @default(DRAFT)
+  items         ResumeItem[]
+  recruitmentId Int
+  recruitment   Recruitment     @relation(fields: [recruitmentId], references: [id],onDelete: Cascade)
+
+  @@index([recruitmentId])
+}
+
+model ResumeItem {
+  id          Int           @id @default(autoincrement())
+  resumeId    Int
+  title       String
+  content     Json
+  description String
+  order       Int
+  resume      Resume        @relation(fields: [resumeId], references: [id],onDelete: Cascade)
+  field       Field?         @relation(fields: [fieldId], references: [id],onDelete: SetNull)
+  fieldId     Int?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([resumeId])
+}
+
+enum ResumeStatus {
+  DRAFT
+  SUBMITTED
+  REVIEWING
+  APPROVED
+  REJECTED
+}
+

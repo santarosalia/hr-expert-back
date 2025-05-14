@@ -45,9 +45,13 @@ export const findOneRecruitment = async (req: Request, res: Response) => {
             include: {
                 template: {
                     include: {
-                        fieldGroups: {
+                        sections: {
                             include: {
-                                fields: true,
+                                sectionFields: {
+                                    include: {
+                                        field: true,
+                                    },
+                                },
                             },
                         },
                     },

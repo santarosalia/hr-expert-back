@@ -4,298 +4,137 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 const main = async () => {
-    const fields1 = await Promise.all([
-        prisma.field.create({
-            data: {
-                name: '경력 유형',
-                description: '지원자의 경력 유형',
-            },
-        }),
-        prisma.field.create({
-            data: {
-                name: '1지망 포지션',
-                description: '지원자의 1지망 포지션',
-            },
-        }),
-        prisma.field.create({
-            data: {
-                name: '2지망 포지션',
-                description: '지원자의 2지망 포지션',
-            },
-        }),
-        prisma.field.create({
-            data: {
-                name: '경력 기간',
-                description: '지원자의 경력 기간',
-            },
-        }),
-        prisma.field.create({
-            data: {
-                name: '희망 연봉',
-                description: '지원자의 희망 연봉',
-            },
-        }),
-        prisma.field.create({
-            data: {
-                name: '1지망 근무 지역',
-                description: '지원자의 1지망 근무 지역',
-            },
-        }),
-        prisma.field.create({
-            data: {
-                name: '2지망 근무 지역',
-                description: '지원자의 2지망 근무 지역',
-            },
-        }),
-    ]);
-    const fields2 = await Promise.all([
-        prisma.field.create({
-            data: {
-                name: '성명',
-                description: '지원자의 성명',
-            },
-        }),
-        prisma.field.create({
-            data: {
-                name: '생년월일',
-                description: '지원자의 생년월일',
-            },
-        }),
-        prisma.field.create({
-            data: {
-                name: '주소',
-                description: '지원자의 주소',
-            },
-        }),
-        prisma.field.create({
-            data: {
-                name: '병역',
-                description: '지원자의 병역 상태',
-            },
-        }),
-        prisma.field.create({
-            data: {
-                name: '장애',
-                description: '지원자의 장애 여부',
-            },
-        }),
-        prisma.field.create({
-            data: {
-                name: '보훈',
-                description: '지원자의 보훈 여부',
-            },
-        }),
-        prisma.field.create({
-            data: {
-                name: '휴대폰',
-                description: '지원자의 휴대폰 번호',
-            },
-        }),
-        prisma.field.create({
-            data: {
-                name: '이메일',
-                description: '지원자의 이메일',
-            },
-        }),
-    ]);
-
-    const fields3 = await Promise.all([
-        prisma.field.create({
-            data: {
-                name: '자격증',
-                description: '지원자의 자격증',
-            },
-        }),
-    ]);
-    const fields4 = await Promise.all([
-        prisma.field.create({
-            data: {
-                name: '어학',
-                description: '지원자의 어학 정보',
-            },
-        }),
-    ]);
-    const fields5 = await Promise.all([
-        prisma.field.create({
-            data: {
-                name: '학력',
-                description: '지원자의 학력',
-            },
-        }),
-    ]);
-    const fields6 = await Promise.all([
-        prisma.field.create({
-            data: {
-                name: '경력',
-                description: '지원자의 경력',
-            },
-        }),
-    ]);
-
-    const fields7 = await Promise.all([
-        prisma.field.create({
-            data: {
-                name: '프로젝트 사항',
-                description: '지원자의 프로젝트 사항',
-            },
-        }),
-    ]);
-
-    const fields8 = await Promise.all([
-        prisma.field.create({
-            data: {
-                name: '자기소개',
-                description: '지원자의 자기소개',
-            },
-        }),
-    ]);
-
-    // 기본 템플릿 생성
-    const template = await prisma.template.create({
+    // 먼저 Field들을 생성
+    const workField = await prisma.field.create({
         data: {
-            name: '기본 이력서 템플릿',
-            description: '기본적인 이력서 작성에 필요한 필드들을 포함한 템플릿',
+            key: 'work',
+            label: '경력',
+            fieldItems: {
+                create: [
+                    { key: 'title', label: '이름', order: 1 },
+                    { key: 'department', label: '부서', order: 2 },
+                    { key: 'begin', label: '시작일', order: 3 },
+                    { key: 'end', label: '종료일', order: 4 },
+                    { key: 'rest_text', label: '??', order: 5 },
+                    { key: 'title', label: '이름', order: 6 },
+                    { key: 'company', label: '회사 명', order: 7 },
+                    { key: 'date', label: '날짜', order: 8 },
+                    { key: 'description', label: '내용', order: 9 },
+                ],
+            },
         },
     });
 
-    const fieldGroup1 = await prisma.fieldGroup.create({
+    const educationField = await prisma.field.create({
         data: {
-            name: '기본 정보1',
-            templateId: template.id,
+            key: 'education',
+            label: '학력',
+            fieldItems: {
+                create: [
+                    { key: 'school', label: '학교', order: 1 },
+                    { key: 'majorName', label: '전공', order: 2 },
+                    { key: 'degreeType', label: '학위', order: 3 },
+                    { key: 'begin', label: '시작일', order: 4 },
+                    { key: 'end', label: '종료일', order: 5 },
+                    { key: 'advisor', label: '추천인', order: 6 },
+                    { key: 'thesis', label: '논문', order: 7 },
+                ],
+            },
         },
     });
 
-    const fieldGroup2 = await prisma.fieldGroup.create({
+    const languagesField = await prisma.field.create({
         data: {
-            name: '기본 정보2',
-            templateId: template.id,
+            key: 'languages',
+            label: '언어',
+            fieldItems: {
+                create: [{ key: 'language', label: '언어', order: 1 }],
+            },
         },
     });
 
-    const fieldGroup3 = await prisma.fieldGroup.create({
+    const languagesTestField = await prisma.field.create({
         data: {
-            name: '자격증',
-            templateId: template.id,
+            key: 'languages_test',
+            label: '어학',
+            fieldItems: {
+                create: [
+                    { key: 'language', label: '언어', order: 1 },
+                    { key: 'score', label: '점수', order: 2 },
+                    { key: 'date', label: '날짜', order: 3 },
+                    { key: 'test', label: '시험', order: 4 },
+                ],
+            },
         },
     });
 
-    const fieldGroup4 = await prisma.fieldGroup.create({
+    // 템플릿 생성
+    await prisma.template.create({
         data: {
-            name: '어학',
-            templateId: template.id,
+            name: '기본 템플릿',
+            description: '기본 템플릿',
+            sections: {
+                create: [
+                    {
+                        key: 'work',
+                        label: '경력섹션',
+                        order: 1,
+                        size: 12,
+                        sectionFields: {
+                            create: [
+                                {
+                                    fieldId: workField.id,
+                                    order: 1,
+                                },
+                            ],
+                        },
+                    },
+                    {
+                        key: 'education',
+                        label: '학력 섹션',
+                        order: 2,
+                        size: 12,
+                        sectionFields: {
+                            create: [
+                                {
+                                    fieldId: educationField.id,
+                                    order: 1,
+                                },
+                            ],
+                        },
+                    },
+                    {
+                        key: 'languages',
+                        label: '언어 섹션',
+                        order: 3,
+                        size: 12,
+                        sectionFields: {
+                            create: [
+                                {
+                                    fieldId: languagesField.id,
+                                    order: 1,
+                                },
+                            ],
+                        },
+                    },
+                    {
+                        key: 'languages_test',
+                        label: '어학 섹션',
+                        order: 4,
+                        size: 12,
+                        sectionFields: {
+                            create: [
+                                {
+                                    fieldId: languagesTestField.id,
+                                    order: 1,
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
         },
     });
-
-    const fieldGroup5 = await prisma.fieldGroup.create({
-        data: {
-            name: '학력',
-            templateId: template.id,
-        },
-    });
-
-    const fieldGroup6 = await prisma.fieldGroup.create({
-        data: {
-            name: '경력',
-            templateId: template.id,
-        },
-    });
-
-    const fieldGroup7 = await prisma.fieldGroup.create({
-        data: {
-            name: '프로젝트 사항',
-            templateId: template.id,
-        },
-    });
-
-    const fieldGroup8 = await prisma.fieldGroup.create({
-        data: {
-            name: '자기소개',
-            templateId: template.id,
-        },
-    });
-    // 템플릿에 필드 연결
-    await Promise.all([
-        ...fields1.map((field, index) =>
-            prisma.fieldGroupField.create({
-                data: {
-                    fieldGroupId: fieldGroup1.id,
-                    fieldId: field.id,
-                    order: index + 1,
-                    isRequired: true,
-                },
-            })
-        ),
-        ...fields2.map((field, index) =>
-            prisma.fieldGroupField.create({
-                data: {
-                    fieldGroupId: fieldGroup2.id,
-                    fieldId: field.id,
-                    order: index + 1,
-                    isRequired: true,
-                },
-            })
-        ),
-        ...fields3.map((field, index) =>
-            prisma.fieldGroupField.create({
-                data: {
-                    fieldGroupId: fieldGroup3.id,
-                    fieldId: field.id,
-                    order: index + 1,
-                    isRequired: true,
-                },
-            })
-        ),
-        ...fields4.map((field, index) =>
-            prisma.fieldGroupField.create({
-                data: {
-                    fieldGroupId: fieldGroup4.id,
-                    fieldId: field.id,
-                    order: index + 1,
-                    isRequired: true,
-                },
-            })
-        ),
-        ...fields5.map((field, index) =>
-            prisma.fieldGroupField.create({
-                data: {
-                    fieldGroupId: fieldGroup5.id,
-                    fieldId: field.id,
-                    order: index + 1,
-                    isRequired: true,
-                },
-            })
-        ),
-        ...fields6.map((field, index) =>
-            prisma.fieldGroupField.create({
-                data: {
-                    fieldGroupId: fieldGroup6.id,
-                    fieldId: field.id,
-                    order: index + 1,
-                    isRequired: true,
-                },
-            })
-        ),
-        ...fields7.map((field, index) =>
-            prisma.fieldGroupField.create({
-                data: {
-                    fieldGroupId: fieldGroup7.id,
-                    fieldId: field.id,
-                    order: index + 1,
-                    isRequired: true,
-                },
-            })
-        ),
-        ...fields8.map((field, index) =>
-            prisma.fieldGroupField.create({
-                data: {
-                    fieldGroupId: fieldGroup8.id,
-                    fieldId: field.id,
-                    order: index + 1,
-                    isRequired: true,
-                },
-            })
-        ),
-    ]);
 };
 
 main()

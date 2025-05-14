@@ -10,7 +10,7 @@ export interface Template {
 export interface CreateTemplateDto {
     name: string;
     description: string;
-    fieldGroups: CreateTemplateFieldGroupDto[];
+    sections: CreateSectionDto[];
 }
 
 export interface UpdateTemplateDto {
@@ -36,4 +36,19 @@ export interface TemplateField {
     fieldId: number;
     order: number;
     isRequired: boolean;
+}
+
+export interface CreateSectionDto {
+    name: string;
+    label: string;
+    key: string;
+    order: number;
+    size: number;
+    sectionFields: SectionFieldDto[];
+}
+
+export interface SectionFieldDto {
+    id: number;
+    fieldId: number;
+    order: number;
 }

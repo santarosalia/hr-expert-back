@@ -24,36 +24,51 @@ model Template {
   createdAt    DateTime        @default(now())
   updatedAt  DateTime @updatedAt
   recruitments Recruitment[]
-  fieldGroups  FieldGroup[]
+  sections     Section[]
 }
-
-model FieldGroup {
+model Section {
   id          Int      @id @default(autoincrement())
   templateId  Int
   template    Template @relation(fields: [templateId], references: [id],onDelete: Cascade)
-  name        String
+  label        String
+  key        String
   description String?
+  order    Int
+  size    Int
   createdAt    DateTime        @default(now())
   updatedAt  DateTime @updatedAt
-  fields      FieldGroupField[]
+  sectionFields SectionField[]
 }
 
 model Field {
+  id          Int      @id @default(autoincrement())
+  label        String
+  key        String
+  description String?
+  createdAt    DateTime        @default(now())
+  updatedAt  DateTime @updatedAt
+  fieldItems      FieldItem[]
+  sectionFields SectionField[]
+  resumeItems ResumeItem[]
+}
+
+model FieldItem {
   id          Int             @id @default(autoincrement())
-  name        String
-  type        FieldType?
+  label        String
+  key        String
   content     Json?
   description String?
   createdAt    DateTime        @default(now())
   updatedAt  DateTime @updatedAt
-  fieldGroupFields  FieldGroupField[]
-  resumeItems ResumeItem[]
+  order    Int
+  fieldId     Int
+  field       Field @relation(fields: [fieldId], references: [id],onDelete: Cascade)
 }
 
-model FieldGroupField {
+model SectionField {
   id          Int      @id @default(autoincrement())
-  fieldGroup  FieldGroup @relation(fields: [fieldGroupId], references: [id],onDelete: Cascade)
-  fieldGroupId Int
+  section  Section @relation(fields: [sectionId], references: [id],onDelete: Cascade)
+  sectionId Int
   field       Field    @relation(fields: [fieldId], references: [id],onDelete: Cascade)
   fieldId     Int
   order    Int
@@ -61,28 +76,8 @@ model FieldGroupField {
   createdAt    DateTime        @default(now())
   updatedAt  DateTime @updatedAt
 
-  @@unique([fieldGroupId, fieldId])
-  @@index([fieldGroupId, fieldId])
-}
-
-
-enum FieldType {
-  TEXT
-  NUMBER
-  DATE
-  BOOLEAN
-  SELECT
-  MULTI_SELECT
-  RADIO
-  CHECKBOX
-  DROPDOWN
-  FILE
-  IMAGE
-  VIDEO
-  LINK
-  EMAIL
-  PHONE
-  URL
+  @@unique([sectionId, fieldId])
+  @@index([sectionId, fieldId])
 }
 
 model Resume {

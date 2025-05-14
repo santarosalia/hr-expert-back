@@ -1,14 +1,10 @@
 import { Router } from 'express';
-import {
-    createTemplate,
-    getAllTemplates,
-    getTemplateById,
-} from '../controllers/template.controller';
+import { templateController } from '../controllers/template.controller';
 
 const router = Router();
 
-router.post('/', createTemplate);
-router.get('/', getAllTemplates);
-router.get('/:id', getTemplateById);
+router.post('/', (req, res) => templateController.createTemplate(req, res));
+router.get('/', (req, res) => templateController.getAllTemplates(req, res));
+router.get('/:id', (req, res) => templateController.getTemplateById(req, res));
 
 export default router;

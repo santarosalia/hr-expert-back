@@ -21,10 +21,10 @@ CREATE TABLE `Template` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `FieldGroup` (
+CREATE TABLE `Section` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `templateId` INTEGER NOT NULL,
-    `name` VARCHAR(191) NOT NULL,
+    `label` VARCHAR(191) NOT NULL,
     `description` VARCHAR(191) NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
@@ -35,28 +35,41 @@ CREATE TABLE `FieldGroup` (
 -- CreateTable
 CREATE TABLE `Field` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `name` VARCHAR(191) NOT NULL,
-    `type` ENUM('TEXT', 'NUMBER', 'DATE', 'BOOLEAN', 'SELECT', 'MULTI_SELECT', 'RADIO', 'CHECKBOX', 'DROPDOWN', 'FILE', 'IMAGE', 'VIDEO', 'LINK', 'EMAIL', 'PHONE', 'URL') NULL,
-    `content` JSON NULL,
+    `label` VARCHAR(191) NOT NULL,
     `description` VARCHAR(191) NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
+    `sectionId` INTEGER NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `FieldGroupField` (
+CREATE TABLE `FieldItem` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `fieldGroupId` INTEGER NOT NULL,
+    `name` VARCHAR(191) NOT NULL,
+    `key` VARCHAR(191) NOT NULL,
+    `content` JSON NULL,
+    `description` VARCHAR(191) NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
+    `fieldId` INTEGER NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `SectionField` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `sectionId` INTEGER NOT NULL,
     `fieldId` INTEGER NOT NULL,
     `order` INTEGER NOT NULL,
     `isRequired` BOOLEAN NOT NULL DEFAULT false,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
-    INDEX `FieldGroupField_fieldGroupId_fieldId_idx`(`fieldGroupId`, `fieldId`),
-    UNIQUE INDEX `FieldGroupField_fieldGroupId_fieldId_key`(`fieldGroupId`, `fieldId`),
+    INDEX `SectionField_sectionId_fieldId_idx`(`sectionId`, `fieldId`),
+    UNIQUE INDEX `SectionField_sectionId_fieldId_key`(`sectionId`, `fieldId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -95,13 +108,19 @@ CREATE TABLE `ResumeItem` (
 ALTER TABLE `Recruitment` ADD CONSTRAINT `Recruitment_templateId_fkey` FOREIGN KEY (`templateId`) REFERENCES `Template`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `FieldGroup` ADD CONSTRAINT `FieldGroup_templateId_fkey` FOREIGN KEY (`templateId`) REFERENCES `Template`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `Section` ADD CONSTRAINT `Section_templateId_fkey` FOREIGN KEY (`templateId`) REFERENCES `Template`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `FieldGroupField` ADD CONSTRAINT `FieldGroupField_fieldGroupId_fkey` FOREIGN KEY (`fieldGroupId`) REFERENCES `FieldGroup`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `Field` ADD CONSTRAINT `Field_sectionId_fkey` FOREIGN KEY (`sectionId`) REFERENCES `Section`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `FieldGroupField` ADD CONSTRAINT `FieldGroupField_fieldId_fkey` FOREIGN KEY (`fieldId`) REFERENCES `Field`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `FieldItem` ADD CONSTRAINT `FieldItem_fieldId_fkey` FOREIGN KEY (`fieldId`) REFERENCES `Field`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `SectionField` ADD CONSTRAINT `SectionField_sectionId_fkey` FOREIGN KEY (`sectionId`) REFERENCES `Section`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `SectionField` ADD CONSTRAINT `SectionField_fieldId_fkey` FOREIGN KEY (`fieldId`) REFERENCES `Field`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Resume` ADD CONSTRAINT `Resume_recruitmentId_fkey` FOREIGN KEY (`recruitmentId`) REFERENCES `Recruitment`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
